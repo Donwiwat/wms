@@ -28,14 +28,15 @@ func NewAuthHandler(authService services.AuthService) *AuthHandler {
 
 // Login handles user login
 // @Summary User login
-// @Description Authenticate user and return JWT token
+// @Description Authenticate user credentials and return JWT access token for API access
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param request body models.LoginRequest true "Login credentials"
-// @Success 200 {object} models.AuthResponse
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
+// @Param credentials body models.LoginRequest true "User login credentials"
+// @Success 200 {object} models.AuthResponse "Successful authentication"
+// @Failure 400 {object} models.ErrorResponse "Invalid request format"
+// @Failure 401 {object} models.ErrorResponse "Invalid credentials"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req models.LoginRequest
@@ -77,14 +78,15 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 // Register handles user registration
 // @Summary User registration
-// @Description Register a new user account
+// @Description Create a new user account in the system with automatic JWT token generation
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param request body models.RegisterRequest true "Registration details"
-// @Success 201 {object} models.AuthResponse
-// @Failure 400 {object} map[string]string
-// @Failure 409 {object} map[string]string
+// @Param user body models.RegisterRequest true "User registration data"
+// @Success 201 {object} models.AuthResponse "User created successfully"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 409 {object} models.ErrorResponse "User already exists"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req models.RegisterRequest

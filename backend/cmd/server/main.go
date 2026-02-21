@@ -11,19 +11,24 @@ import (
 	"wms-backend/internal/repositories"
 	"wms-backend/internal/services"
 
+	// Import generated docs
+	_ "wms-backend/docs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title WMS API
 // @version 1.0
-// @description Warehouse Management System API
+// @description Warehouse Management System API with comprehensive inventory, order, and customer management capabilities
 // @termsOfService http://swagger.io/terms/
 
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
+// @contact.name WMS API Support
+// @contact.url http://www.example.com/support
+// @contact.email support@example.com
 
 // @license.name MIT
 // @license.url https://opensource.org/licenses/MIT
@@ -34,6 +39,28 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+
+// @tag.name auth
+// @tag.description Authentication operations
+
+// @tag.name products
+// @tag.description Product management operations
+
+// @tag.name customers
+// @tag.description Customer management operations
+
+// @tag.name orders
+// @tag.description Order management operations
+
+// @tag.name warehouses
+// @tag.description Warehouse management operations
+
+// @tag.name stock
+// @tag.description Stock operations and inventory management
+
+// @tag.name documents
+// @tag.description Document management (Sales Orders, Purchase Orders, etc.)
 func main() {
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
@@ -69,6 +96,7 @@ func main() {
 
 	// Start server
 	log.Printf("Server starting on %s:%s", cfg.Server.Host, cfg.Server.Port)
+	log.Printf("Swagger UI available at: http://%s:%s/swagger/index.html", cfg.Server.Host, cfg.Server.Port)
 	if err := router.Run(cfg.Server.Host + ":" + cfg.Server.Port); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
@@ -102,6 +130,11 @@ func setupRouter(cfg *config.Config, h *handlers.Handlers) *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
+
+	// Swagger endpoint (only in development)
+	if os.Getenv("GIN_MODE") != "release" {
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	// API routes
 	api := router.Group("/api/v1")

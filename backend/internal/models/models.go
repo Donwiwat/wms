@@ -7,22 +7,23 @@ import (
 )
 
 // Product represents a product in the warehouse
+// @Description Product information with pricing and inventory details
 type Product struct {
-	ID        int       `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name" validate:"required"`
-	ShortName string    `json:"short_name" db:"short_name"`
-	Brand     string    `json:"brand" db:"brand"`
-	Model     string    `json:"model" db:"model"`
-	Size      string    `json:"size" db:"size"`
-	Group     string    `json:"group" db:"group"`
-	Unit1     string    `json:"unit1" db:"unit1" validate:"required"`
-	Unit2     string    `json:"unit2" db:"unit2"`
-	Ratio     float64   `json:"ratio" db:"ratio"`
-	Cost      float64   `json:"cost" db:"cost"`
-	Message   string    `json:"message" db:"message"`
-	Note      string    `json:"note" db:"note"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID        int       `json:"id" db:"id" example:"1" description:"Unique product identifier"`
+	Name      string    `json:"name" db:"name" validate:"required" example:"Premium Widget A" description:"Full product name"`
+	ShortName string    `json:"short_name" db:"short_name" example:"PWA-001" description:"Short product code for quick reference"`
+	Brand     string    `json:"brand" db:"brand" example:"TechCorp" description:"Product brand or manufacturer"`
+	Model     string    `json:"model" db:"model" example:"TC-2024" description:"Product model number"`
+	Size      string    `json:"size" db:"size" example:"Large" description:"Product size specification"`
+	Group     string    `json:"group" db:"group" example:"Electronics" description:"Product category or group"`
+	Unit1     string    `json:"unit1" db:"unit1" validate:"required" example:"PCS" description:"Primary unit of measurement"`
+	Unit2     string    `json:"unit2" db:"unit2" example:"BOX" description:"Secondary unit of measurement"`
+	Ratio     float64   `json:"ratio" db:"ratio" example:"12" description:"Conversion ratio between Unit1 and Unit2"`
+	Cost      float64   `json:"cost" db:"cost" example:"25.50" description:"Product cost price"`
+	Message   string    `json:"message" db:"message" example:"Handle with care" description:"Special handling instructions"`
+	Note      string    `json:"note" db:"note" example:"Fragile item" description:"Additional notes"`
+	CreatedAt time.Time `json:"created_at" db:"created_at" example:"2024-01-15T10:30:00Z" description:"Record creation timestamp"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at" example:"2024-01-15T10:30:00Z" description:"Last update timestamp"`
 }
 
 // CustomerGroup represents customer groups for pricing
@@ -253,84 +254,93 @@ type OrderItem struct {
 
 // DTOs for API requests/responses
 
-// StockInRequest represents stock in request
+// StockInRequest represents stock in operation request
+// @Description Request payload for adding stock to warehouse
 type StockInRequest struct {
-	ProductID   int     `json:"product_id" validate:"required"`
-	WarehouseID int     `json:"warehouse_id" validate:"required"`
-	Qty         float64 `json:"qty" validate:"required,min=0"`
-	Unit        string  `json:"unit" validate:"required"`
-	RefType     string  `json:"ref_type"`
-	RefID       *int    `json:"ref_id"`
-	Note        string  `json:"note"`
+	ProductID   int     `json:"product_id" validate:"required" example:"1" description:"Product identifier"`
+	WarehouseID int     `json:"warehouse_id" validate:"required" example:"1" description:"Target warehouse identifier"`
+	Qty         float64 `json:"qty" validate:"required,min=0" example:"100" description:"Quantity to add"`
+	Unit        string  `json:"unit" validate:"required" example:"PCS" description:"Unit of measurement"`
+	RefType     string  `json:"ref_type" example:"PO" description:"Reference document type (PO, GRN, etc.)"`
+	RefID       *int    `json:"ref_id" example:"123" description:"Reference document ID"`
+	Note        string  `json:"note" example:"Initial stock" description:"Operation notes"`
 }
 
-// StockOutRequest represents stock out request
+// StockOutRequest represents stock out operation request
+// @Description Request payload for removing stock from warehouse
 type StockOutRequest struct {
-	ProductID   int     `json:"product_id" validate:"required"`
-	WarehouseID int     `json:"warehouse_id" validate:"required"`
-	Qty         float64 `json:"qty" validate:"required,min=0"`
-	Unit        string  `json:"unit" validate:"required"`
-	RefType     string  `json:"ref_type"`
-	RefID       *int    `json:"ref_id"`
-	Note        string  `json:"note"`
+	ProductID   int     `json:"product_id" validate:"required" example:"1" description:"Product identifier"`
+	WarehouseID int     `json:"warehouse_id" validate:"required" example:"1" description:"Source warehouse identifier"`
+	Qty         float64 `json:"qty" validate:"required,min=0" example:"50" description:"Quantity to remove"`
+	Unit        string  `json:"unit" validate:"required" example:"PCS" description:"Unit of measurement"`
+	RefType     string  `json:"ref_type" example:"SO" description:"Reference document type (SO, DO, etc.)"`
+	RefID       *int    `json:"ref_id" example:"456" description:"Reference document ID"`
+	Note        string  `json:"note" example:"Sales order fulfillment" description:"Operation notes"`
 }
 
-// BreakDownRequest represents break down request
+// BreakDownRequest represents break down operation request
+// @Description Request payload for breaking down products from larger to smaller units
 type BreakDownRequest struct {
-	ProductID   int    `json:"product_id" validate:"required"`
-	WarehouseID int    `json:"warehouse_id" validate:"required"`
-	QtyUnit2    int    `json:"qty_unit2" validate:"required,min=1"`
-	Note        string `json:"note"`
+	ProductID   int    `json:"product_id" validate:"required" example:"1" description:"Product identifier"`
+	WarehouseID int    `json:"warehouse_id" validate:"required" example:"1" description:"Warehouse identifier"`
+	QtyUnit2    int    `json:"qty_unit2" validate:"required,min=1" example:"5" description:"Quantity in Unit2 to break down"`
+	Note        string `json:"note" example:"Break down for retail" description:"Operation notes"`
 }
 
-// PackUpRequest represents pack up request
+// PackUpRequest represents pack up operation request
+// @Description Request payload for packing products from smaller to larger units
 type PackUpRequest struct {
-	ProductID   int    `json:"product_id" validate:"required"`
-	WarehouseID int    `json:"warehouse_id" validate:"required"`
-	QtyUnit2    int    `json:"qty_unit2" validate:"required,min=1"`
-	Note        string `json:"note"`
+	ProductID   int    `json:"product_id" validate:"required" example:"1" description:"Product identifier"`
+	WarehouseID int    `json:"warehouse_id" validate:"required" example:"1" description:"Warehouse identifier"`
+	QtyUnit2    int    `json:"qty_unit2" validate:"required,min=1" example:"3" description:"Quantity in Unit2 to pack up"`
+	Note        string `json:"note" example:"Pack for wholesale" description:"Operation notes"`
 }
 
-// TransferRequest represents transfer request
+// TransferRequest represents transfer operation request
+// @Description Request payload for transferring stock between warehouses
 type TransferRequest struct {
-	ProductID       int     `json:"product_id" validate:"required"`
-	FromWarehouseID int     `json:"from_warehouse_id" validate:"required"`
-	ToWarehouseID   int     `json:"to_warehouse_id" validate:"required"`
-	Qty             float64 `json:"qty" validate:"required,min=0"`
-	Unit            string  `json:"unit" validate:"required"`
-	RefType         string  `json:"ref_type"`
-	RefID           *int    `json:"ref_id"`
-	Note            string  `json:"note"`
+	ProductID       int     `json:"product_id" validate:"required" example:"1" description:"Product identifier"`
+	FromWarehouseID int     `json:"from_warehouse_id" validate:"required" example:"1" description:"Source warehouse identifier"`
+	ToWarehouseID   int     `json:"to_warehouse_id" validate:"required" example:"2" description:"Destination warehouse identifier"`
+	Qty             float64 `json:"qty" validate:"required,min=0" example:"25" description:"Quantity to transfer"`
+	Unit            string  `json:"unit" validate:"required" example:"PCS" description:"Unit of measurement"`
+	RefType         string  `json:"ref_type" example:"TF" description:"Reference document type"`
+	RefID           *int    `json:"ref_id" example:"789" description:"Reference document ID"`
+	Note            string  `json:"note" example:"Rebalancing inventory" description:"Transfer notes"`
 }
 
 // StockAdjustRequest represents stock adjustment request
+// @Description Request payload for adjusting stock levels (corrections)
 type StockAdjustRequest struct {
-	ProductID   int    `json:"product_id" validate:"required"`
-	WarehouseID int    `json:"warehouse_id" validate:"required"`
-	NewRemain1  int    `json:"new_remain1" validate:"min=0"`
-	NewRemain2  int    `json:"new_remain2" validate:"min=0"`
-	Reason      string `json:"reason" validate:"required"`
-	Note        string `json:"note"`
+	ProductID   int    `json:"product_id" validate:"required" example:"1" description:"Product identifier"`
+	WarehouseID int    `json:"warehouse_id" validate:"required" example:"1" description:"Warehouse identifier"`
+	NewRemain1  int    `json:"new_remain1" validate:"min=0" example:"150" description:"New quantity in Unit1"`
+	NewRemain2  int    `json:"new_remain2" validate:"min=0" example:"12" description:"New quantity in Unit2"`
+	Reason      string `json:"reason" validate:"required" example:"Physical count correction" description:"Reason for adjustment"`
+	Note        string `json:"note" example:"Annual inventory count" description:"Additional notes"`
 }
 
-// LoginRequest represents login request
+// LoginRequest represents user login credentials
+// @Description User authentication request payload
 type LoginRequest struct {
-	Username string `json:"username" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Username string `json:"username" validate:"required" example:"admin" description:"User login name"`
+	Password string `json:"password" validate:"required" example:"password123" description:"User password"`
 }
 
-// RegisterRequest represents register request
+// RegisterRequest represents user registration data
+// @Description User registration request payload
 type RegisterRequest struct {
-	Username string `json:"username" validate:"required,min=3"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=6"`
-	Role     string `json:"role"`
+	Username string `json:"username" validate:"required,min=3" example:"newuser" description:"Unique username (minimum 3 characters)"`
+	Email    string `json:"email" validate:"required,email" example:"user@example.com" description:"Valid email address"`
+	Password string `json:"password" validate:"required,min=6" example:"securepass123" description:"Password (minimum 6 characters)"`
+	Role     string `json:"role" example:"user" description:"User role (admin, user, etc.)"`
 }
 
 // AuthResponse represents authentication response
+// @Description Successful authentication response with JWT token
 type AuthResponse struct {
-	Token string `json:"token"`
-	User  User   `json:"user"`
+	Token string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." description:"JWT access token"`
+	User  User   `json:"user" description:"Authenticated user information"`
 }
 
 // StockSummary represents stock summary with product and warehouse details
@@ -430,4 +440,29 @@ func (o Order) MarshalJSON() ([]byte, error) {
 		}(),
 		Alias: (*Alias)(&o),
 	})
+}
+
+// ErrorResponse represents API error response
+// @Description Standard error response format
+type ErrorResponse struct {
+	Error   string `json:"error" example:"Invalid request parameters" description:"Error message"`
+	Code    int    `json:"code,omitempty" example:"400" description:"Error code"`
+	Details string `json:"details,omitempty" example:"Field 'name' is required" description:"Detailed error information"`
+}
+
+// SuccessResponse represents successful operation response
+// @Description Standard success response format
+type SuccessResponse struct {
+	Message string      `json:"message" example:"Operation completed successfully" description:"Success message"`
+	Data    interface{} `json:"data,omitempty" description:"Response data"`
+}
+
+// PaginationResponse represents paginated response
+// @Description Standard pagination response format
+type PaginationResponse struct {
+	Data       interface{} `json:"data" description:"Response data array"`
+	Page       int         `json:"page" example:"1" description:"Current page number"`
+	Limit      int         `json:"limit" example:"10" description:"Items per page"`
+	Total      int64       `json:"total" example:"100" description:"Total number of items"`
+	TotalPages int         `json:"total_pages" example:"10" description:"Total number of pages"`
 }

@@ -50,6 +50,20 @@ func NewProductHandler(productService services.ProductService) *ProductHandler {
 	return &ProductHandler{productService: productService, validator: validator.New()}
 }
 
+// GetProducts godoc
+// @Summary List all products
+// @Description Get a list of all products in the system with optional filtering and pagination
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" minimum(1) default(1)
+// @Param limit query int false "Items per page" minimum(1) maximum(100) default(10)
+// @Param search query string false "Search term for product name"
+// @Success 200 {object} models.SuccessResponse{data=[]models.Product} "List of products"
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /products [get]
 func (h *ProductHandler) GetProducts(c *gin.Context) {
 	products, err := h.productService.List()
 	if err != nil {
@@ -59,6 +73,19 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 	c.JSON(http.StatusOK, products)
 }
 
+// GetProduct godoc
+// @Summary Get product by ID
+// @Description Retrieve detailed information for a specific product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID" minimum(1)
+// @Success 200 {object} models.SuccessResponse{data=models.Product} "Product details"
+// @Failure 400 {object} models.ErrorResponse "Invalid product ID"
+// @Failure 404 {object} models.ErrorResponse "Product not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /products/{id} [get]
 func (h *ProductHandler) GetProduct(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	product, err := h.productService.GetByID(id)
@@ -69,6 +96,19 @@ func (h *ProductHandler) GetProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, product)
 }
 
+// CreateProduct godoc
+// @Summary Create new product
+// @Description Add a new product to the system
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param product body models.Product true "Product information"
+// @Success 201 {object} models.SuccessResponse{data=models.Product} "Created product"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 409 {object} models.ErrorResponse "Product already exists"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /products [post]
 func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
@@ -82,6 +122,20 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	c.JSON(http.StatusCreated, product)
 }
 
+// UpdateProduct godoc
+// @Summary Update product
+// @Description Update an existing product's information
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID" minimum(1)
+// @Param product body models.Product true "Updated product information"
+// @Success 200 {object} models.SuccessResponse{data=models.Product} "Updated product"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 404 {object} models.ErrorResponse "Product not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /products/{id} [put]
 func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var product models.Product
@@ -97,6 +151,19 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, product)
 }
 
+// DeleteProduct godoc
+// @Summary Delete product
+// @Description Remove a product from the system
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID" minimum(1)
+// @Success 200 {object} models.SuccessResponse "Product deleted successfully"
+// @Failure 400 {object} models.ErrorResponse "Invalid product ID"
+// @Failure 404 {object} models.ErrorResponse "Product not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /products/{id} [delete]
 func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := h.productService.Delete(id); err != nil {
@@ -106,6 +173,19 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Product deleted"})
 }
 
+// GetProductPrices godoc
+// @Summary Get product prices
+// @Description Get pricing information for a specific product across different customer groups
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID" minimum(1)
+// @Success 200 {object} models.SuccessResponse{data=[]models.ProductPrice} "Product prices"
+// @Failure 400 {object} models.ErrorResponse "Invalid product ID"
+// @Failure 404 {object} models.ErrorResponse "Product not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /products/{id}/prices [get]
 func (h *ProductHandler) GetProductPrices(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	c.JSON(http.StatusOK, gin.H{"product_id": id, "prices": []interface{}{}})
@@ -224,6 +304,20 @@ func NewWarehouseHandler(service services.WarehouseService) *WarehouseHandler {
 	return &WarehouseHandler{service: service, validator: validator.New()}
 }
 
+// GetWarehouses godoc
+// @Summary List all warehouses
+// @Description Get a list of all warehouses in the system with optional filtering and pagination
+// @Tags warehouses
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" minimum(1) default(1)
+// @Param limit query int false "Items per page" minimum(1) maximum(100) default(10)
+// @Param search query string false "Search term for warehouse name"
+// @Success 200 {object} models.SuccessResponse{data=[]models.Warehouse} "List of warehouses"
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /warehouses [get]
 func (h *WarehouseHandler) GetWarehouses(c *gin.Context) {
 	warehouses, err := h.service.List()
 	if err != nil {
@@ -233,6 +327,19 @@ func (h *WarehouseHandler) GetWarehouses(c *gin.Context) {
 	c.JSON(http.StatusOK, warehouses)
 }
 
+// GetWarehouse godoc
+// @Summary Get warehouse by ID
+// @Description Retrieve detailed information for a specific warehouse
+// @Tags warehouses
+// @Accept json
+// @Produce json
+// @Param id path int true "Warehouse ID" minimum(1)
+// @Success 200 {object} models.SuccessResponse{data=models.Warehouse} "Warehouse details"
+// @Failure 400 {object} models.ErrorResponse "Invalid warehouse ID"
+// @Failure 404 {object} models.ErrorResponse "Warehouse not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /warehouses/{id} [get]
 func (h *WarehouseHandler) GetWarehouse(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	warehouse, err := h.service.GetByID(id)
@@ -243,6 +350,19 @@ func (h *WarehouseHandler) GetWarehouse(c *gin.Context) {
 	c.JSON(http.StatusOK, warehouse)
 }
 
+// CreateWarehouse godoc
+// @Summary Create new warehouse
+// @Description Add a new warehouse to the system
+// @Tags warehouses
+// @Accept json
+// @Produce json
+// @Param warehouse body models.Warehouse true "Warehouse information"
+// @Success 201 {object} models.SuccessResponse{data=models.Warehouse} "Created warehouse"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 409 {object} models.ErrorResponse "Warehouse already exists"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /warehouses [post]
 func (h *WarehouseHandler) CreateWarehouse(c *gin.Context) {
 	var warehouse models.Warehouse
 	if err := c.ShouldBindJSON(&warehouse); err != nil {
@@ -256,6 +376,20 @@ func (h *WarehouseHandler) CreateWarehouse(c *gin.Context) {
 	c.JSON(http.StatusCreated, warehouse)
 }
 
+// UpdateWarehouse godoc
+// @Summary Update warehouse
+// @Description Update an existing warehouse's information
+// @Tags warehouses
+// @Accept json
+// @Produce json
+// @Param id path int true "Warehouse ID" minimum(1)
+// @Param warehouse body models.Warehouse true "Updated warehouse information"
+// @Success 200 {object} models.SuccessResponse{data=models.Warehouse} "Updated warehouse"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 404 {object} models.ErrorResponse "Warehouse not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /warehouses/{id} [put]
 func (h *WarehouseHandler) UpdateWarehouse(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var warehouse models.Warehouse
@@ -271,6 +405,19 @@ func (h *WarehouseHandler) UpdateWarehouse(c *gin.Context) {
 	c.JSON(http.StatusOK, warehouse)
 }
 
+// DeleteWarehouse godoc
+// @Summary Delete warehouse
+// @Description Remove a warehouse from the system
+// @Tags warehouses
+// @Accept json
+// @Produce json
+// @Param id path int true "Warehouse ID" minimum(1)
+// @Success 200 {object} models.SuccessResponse "Warehouse deleted successfully"
+// @Failure 400 {object} models.ErrorResponse "Invalid warehouse ID"
+// @Failure 404 {object} models.ErrorResponse "Warehouse not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /warehouses/{id} [delete]
 func (h *WarehouseHandler) DeleteWarehouse(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := h.service.Delete(id); err != nil {
@@ -310,13 +457,66 @@ type SalesOrderHandler struct{ service services.SalesOrderService }
 func NewSalesOrderHandler(service services.SalesOrderService) *SalesOrderHandler {
 	return &SalesOrderHandler{service: service}
 }
+
+// GetSalesOrders godoc
+// @Summary List all sales orders
+// @Description Get a list of all sales orders in the system
+// @Tags documents
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.SalesOrder} "List of sales orders"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /sales-orders [get]
 func (h *SalesOrderHandler) GetSalesOrders(c *gin.Context) { c.JSON(http.StatusOK, []interface{}{}) }
+
+// CreateSalesOrder godoc
+// @Summary Create new sales order
+// @Description Add a new sales order to the system
+// @Tags documents
+// @Accept json
+// @Produce json
+// @Param salesOrder body models.SalesOrder true "Sales order information"
+// @Success 201 {object} models.SuccessResponse{data=models.SalesOrder} "Created sales order"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /sales-orders [post]
 func (h *SalesOrderHandler) CreateSalesOrder(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created"})
 }
+
+// UpdateSalesOrder godoc
+// @Summary Update sales order
+// @Description Update an existing sales order
+// @Tags documents
+// @Accept json
+// @Produce json
+// @Param id path int true "Sales Order ID" minimum(1)
+// @Param salesOrder body models.SalesOrder true "Updated sales order information"
+// @Success 200 {object} models.SuccessResponse{data=models.SalesOrder} "Updated sales order"
+// @Failure 400 {object} models.ErrorResponse "Invalid request data"
+// @Failure 404 {object} models.ErrorResponse "Sales order not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /sales-orders/{id} [put]
 func (h *SalesOrderHandler) UpdateSalesOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Updated"})
 }
+
+// DeleteSalesOrder godoc
+// @Summary Delete sales order
+// @Description Remove a sales order from the system
+// @Tags documents
+// @Accept json
+// @Produce json
+// @Param id path int true "Sales Order ID" minimum(1)
+// @Success 200 {object} models.SuccessResponse "Sales order deleted successfully"
+// @Failure 400 {object} models.ErrorResponse "Invalid sales order ID"
+// @Failure 404 {object} models.ErrorResponse "Sales order not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /sales-orders/{id} [delete]
 func (h *SalesOrderHandler) DeleteSalesOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Deleted"})
 }
