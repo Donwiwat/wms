@@ -1,4 +1,3 @@
-import React from 'react'
 import { StockCardEntry, Product, Warehouse } from '../types'
 
 interface StockCardProps {

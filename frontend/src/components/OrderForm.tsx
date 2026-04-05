@@ -44,7 +44,7 @@ export default function OrderForm({ order, onSubmit, onCancel, isLoading = false
           quantity: item.order_item.quantity,
           unit: item.order_item.unit,
           unit_price: item.order_item.unit_price,
-          note: item.order_item.note?.String || ""
+          note: item.order_item.note?.toString() || ""
         }))
       })
     }

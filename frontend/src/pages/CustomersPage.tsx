@@ -1,122 +1,136 @@
-import React, { useState, useEffect } from 'react'
-import { Customer, CustomerFormData } from '../types'
-import CustomerForm from '../components/CustomerForm'
-import { customerService } from '../services/customerService'
+import { useState, useEffect } from "react";
+import { Customer, CustomerFormData } from "../types";
+import CustomerForm from "../components/CustomerForm";
+import { customerService } from "../services/customerService";
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>([])
-  const [showForm, setShowForm] = useState(false)
-  const [editingCustomer, setEditingCustomer] = useState<Customer | undefined>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<
+    Customer | undefined
+  >();
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    loadCustomers()
-  }, [])
+    loadCustomers();
+  }, []);
 
   const loadCustomers = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const customers = await customerService.getCustomers()
-      setCustomers(customers)
+      const customers = await customerService.getCustomers();
+      setCustomers(customers);
     } catch (error) {
-      console.error('Error loading customers:', error)
+      console.error("Error loading customers:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCreateCustomer = async (data: CustomerFormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const customer = await customerService.createCustomer(data)
-      setCustomers(prev => [...prev, customer])
-      setShowForm(false)
+      const customer = await customerService.createCustomer(data);
+      setCustomers((prev) => [...prev, customer]);
+      setShowForm(false);
     } catch (error) {
-      console.error('Error creating customer:', error)
-      throw error
+      console.error("Error creating customer:", error);
+      throw error;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleUpdateCustomer = async (data: CustomerFormData) => {
-    if (!editingCustomer) return
-    
-    setIsLoading(true)
+    if (!editingCustomer) return;
+
+    setIsLoading(true);
     try {
-      const customer = await customerService.updateCustomer(editingCustomer.id, data)
-      setCustomers(prev => prev.map(c => c.id === editingCustomer.id ? customer : c))
-      setShowForm(false)
-      setEditingCustomer(undefined)
+      const customer = await customerService.updateCustomer(
+        editingCustomer.id,
+        data,
+      );
+      setCustomers((prev) =>
+        prev.map((c) => (c.id === editingCustomer.id ? customer : c)),
+      );
+      setShowForm(false);
+      setEditingCustomer(undefined);
     } catch (error) {
-      console.error('Error updating customer:', error)
-      throw error
+      console.error("Error updating customer:", error);
+      throw error;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDeleteCustomer = async (customer: Customer) => {
     if (!confirm(`Are you sure you want to delete "${customer.name}"?`)) {
-      return
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await customerService.deleteCustomer(customer.id)
-      setCustomers(prev => prev.filter(c => c.id !== customer.id))
+      await customerService.deleteCustomer(customer.id);
+      setCustomers((prev) => prev.filter((c) => c.id !== customer.id));
     } catch (error) {
-      console.error('Error deleting customer:', error)
+      console.error("Error deleting customer:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleEditCustomer = (customer: Customer) => {
-    setEditingCustomer(customer)
-    setShowForm(true)
-  }
+    setEditingCustomer(customer);
+    setShowForm(true);
+  };
 
   const handleCancelForm = () => {
-    setShowForm(false)
-    setEditingCustomer(undefined)
-  }
+    setShowForm(false);
+    setEditingCustomer(undefined);
+  };
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
-      loadCustomers()
-      return
+      loadCustomers();
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const customers = await customerService.searchCustomers(searchTerm)
-      setCustomers(customers)
+      const customers = await customerService.searchCustomers(searchTerm);
+      setCustomers(customers);
     } catch (error) {
-      console.error('Error searching customers:', error)
+      console.error("Error searching customers:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const filteredCustomers = searchTerm ? customers : customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.contact_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredCustomers = searchTerm
+    ? customers
+    : customers.filter(
+        (customer) =>
+          customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          customer.contact_person
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          customer.phone.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
 
   if (showForm) {
     return (
       <div className="space-y-6">
         <CustomerForm
           customer={editingCustomer}
-          onSubmit={editingCustomer ? handleUpdateCustomer : handleCreateCustomer}
+          onSubmit={
+            editingCustomer ? handleUpdateCustomer : handleCreateCustomer
+          }
           onCancel={handleCancelForm}
           isLoading={isLoading}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -146,7 +160,7 @@ export default function CustomersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input flex-1"
               disabled={isLoading}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
             />
             <button
               onClick={handleSearch}
@@ -158,8 +172,8 @@ export default function CustomersPage() {
             {searchTerm && (
               <button
                 onClick={() => {
-                  setSearchTerm('')
-                  loadCustomers()
+                  setSearchTerm("");
+                  loadCustomers();
                 }}
                 className="btn-secondary"
                 disabled={isLoading}
@@ -186,7 +200,9 @@ export default function CustomersPage() {
           ) : filteredCustomers.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">
-                {searchTerm ? 'No customers found matching your search' : 'No customers found'}
+                {searchTerm
+                  ? "No customers found matching your search"
+                  : "No customers found"}
               </p>
               {!searchTerm && (
                 <button
@@ -244,13 +260,18 @@ export default function CustomersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          customer.level === 'VIP' ? 'bg-purple-100 text-purple-800' :
-                          customer.level === 'Premium' ? 'bg-blue-100 text-blue-800' :
-                          customer.level === 'Standard' ? 'bg-green-100 text-green-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {customer.level || 'Basic'}
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            customer.level === "VIP"
+                              ? "bg-purple-100 text-purple-800"
+                              : customer.level === "Premium"
+                                ? "bg-blue-100 text-blue-800"
+                                : customer.level === "Standard"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {customer.level || "Basic"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -262,9 +283,13 @@ export default function CustomersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`text-sm font-medium ${
-                          customer.outstanding > 0 ? 'text-red-600' : 'text-green-600'
-                        }`}>
+                        <div
+                          className={`text-sm font-medium ${
+                            customer.outstanding > 0
+                              ? "text-red-600"
+                              : "text-green-600"
+                          }`}
+                        >
                           ${customer.outstanding.toFixed(2)}
                         </div>
                       </td>
@@ -291,5 +316,5 @@ export default function CustomersPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

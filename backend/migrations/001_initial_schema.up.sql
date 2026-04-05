@@ -1,5 +1,5 @@
 -- Create users table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE users (
 );
 
 -- Create customer_groups table
-CREATE TABLE customer_groups (
+CREATE TABLE IF NOT EXISTS customer_groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -20,7 +20,7 @@ CREATE TABLE customer_groups (
 );
 
 -- Create customers table
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
     id SERIAL PRIMARY KEY,
     prefix VARCHAR(20),
     name VARCHAR(255) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE customers (
 );
 
 -- Create orders table
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     order_number VARCHAR(50) UNIQUE NOT NULL,
     customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
@@ -60,7 +60,7 @@ CREATE TABLE orders (
 );
 
 -- Create order_items table
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
@@ -73,7 +73,7 @@ CREATE TABLE order_items (
 );
 
 -- Create products table
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     short_name VARCHAR(50),
@@ -92,7 +92,7 @@ CREATE TABLE products (
 );
 
 -- Create product_prices table
-CREATE TABLE product_prices (
+CREATE TABLE IF NOT EXISTS product_prices (
     id SERIAL PRIMARY KEY,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
     customer_group_id INTEGER REFERENCES customer_groups(id) ON DELETE CASCADE,
@@ -104,7 +104,7 @@ CREATE TABLE product_prices (
 );
 
 -- Create warehouses table
-CREATE TABLE warehouses (
+CREATE TABLE IF NOT EXISTS warehouses (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     location VARCHAR(255),
@@ -114,7 +114,7 @@ CREATE TABLE warehouses (
 );
 
 -- Create stock table
-CREATE TABLE stock (
+CREATE TABLE IF NOT EXISTS stock (
     id SERIAL PRIMARY KEY,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
     warehouse_id INTEGER REFERENCES warehouses(id) ON DELETE CASCADE,
@@ -126,7 +126,7 @@ CREATE TABLE stock (
 );
 
 -- Create sales_orders table
-CREATE TABLE sales_orders (
+CREATE TABLE IF NOT EXISTS sales_orders (
     id SERIAL PRIMARY KEY,
     so_number VARCHAR(50) UNIQUE NOT NULL,
     date DATE NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE sales_orders (
 );
 
 -- Create delivery_orders table
-CREATE TABLE delivery_orders (
+CREATE TABLE IF NOT EXISTS delivery_orders (
     id SERIAL PRIMARY KEY,
     do_number VARCHAR(50) UNIQUE NOT NULL,
     date DATE NOT NULL,
@@ -149,7 +149,7 @@ CREATE TABLE delivery_orders (
 );
 
 -- Create purchase_orders table
-CREATE TABLE purchase_orders (
+CREATE TABLE IF NOT EXISTS purchase_orders (
     id SERIAL PRIMARY KEY,
     po_number VARCHAR(50) UNIQUE NOT NULL,
     date DATE NOT NULL,
@@ -160,7 +160,7 @@ CREATE TABLE purchase_orders (
 );
 
 -- Create goods_receipts table
-CREATE TABLE goods_receipts (
+CREATE TABLE IF NOT EXISTS goods_receipts (
     id SERIAL PRIMARY KEY,
     grn_number VARCHAR(50) UNIQUE NOT NULL,
     date DATE NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE goods_receipts (
 );
 
 -- Create transfers table
-CREATE TABLE transfers (
+CREATE TABLE IF NOT EXISTS transfers (
     id SERIAL PRIMARY KEY,
     tf_number VARCHAR(50) UNIQUE NOT NULL,
     from_warehouse_id INTEGER REFERENCES warehouses(id),
@@ -184,7 +184,7 @@ CREATE TABLE transfers (
 );
 
 -- Create stock_adjustments table
-CREATE TABLE stock_adjustments (
+CREATE TABLE IF NOT EXISTS stock_adjustments (
     id SERIAL PRIMARY KEY,
     adj_number VARCHAR(50) UNIQUE NOT NULL,
     date DATE NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE stock_adjustments (
 );
 
 -- Create stock_movements table
-CREATE TABLE stock_movements (
+CREATE TABLE IF NOT EXISTS stock_movements (
     id SERIAL PRIMARY KEY,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
     warehouse_id INTEGER REFERENCES warehouses(id) ON DELETE CASCADE,
